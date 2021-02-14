@@ -37,8 +37,6 @@ modificacionKernelparaDebian(){
 # Instalación de Docker
 distro=$(awk '{ print $1 }' /etc/issue)
 
-if [ "$distro" = "Debian" ]
-        modificacionKernelparaDebian
+if [ "$distro" = "Debian" ]; then
+	modificacionKernelparaDebian
 fi
-
-curl -fsSL https://get.docker.com/rootless | sh
