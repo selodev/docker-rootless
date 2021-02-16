@@ -2,3 +2,5 @@
 *
 # Add exception for the directories you actually want to include in the context
 !entrypoint.sh
+!modprobe.sh
+!docker-entrypoint.sh
