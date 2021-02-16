@@ -56,9 +56,9 @@ USER coder
 WORKDIR /home/coder
 #USER coder
 RUN curl -fsSL https://get.docker.com/rootless | sh 
-RUN echo "export XDG_RUNTIME_DIR=/home/coder/.docker/run" >> ~/.bashrc
-RUN echo "export PATH=/home/coder/bin:$PATH" >> ~/.bashrc
-RUN echo "export DOCKER_HOST=unix:///home/coder/.docker/run/docker.sock" >> ~/.bashrc
+#RUN echo "export XDG_RUNTIME_DIR=/home/coder/.docker/run" >> ~/.bashrc
+#RUN echo "export PATH=/home/coder/bin:$PATH" >> ~/.bashrc
+#RUN echo "export DOCKER_HOST=unix:///home/coder/.docker/run/docker.sock" >> ~/.bashrc
 
 RUN curl -L "https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m)" -o ~/bin/docker-compose && \
     chmod +x ~/bin/docker-compose
@@ -85,7 +85,7 @@ RUN  echo "**** install code-server ****" && \
 
 RUN mkdir -p /home/coder/.config
 RUN mkdir -p /home/coder/.local/share/code-server
-RUN chown -R coder:coder $HOME
+#RUN chown -R coder:coder $HOME
 EXPOSE 8080
 # This way, if someone sets $DOCKER_USER, docker-exec will still work as
 # the uid will remain the same. note: only relevant if -u isn't passed to
@@ -94,5 +94,6 @@ EXPOSE 8080
 #ENV USER=coder
 #ENTRYPOINT ["/home/coder/docker-entrypoint.sh"]
 
-ENTRYPOINT ["/home/coder/docker-entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "--auth", "none", "--user-data-dir", "/home/coder/.local" ]
+ENTRYPOINT ["/home/coder/docker-entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "--user-data-dir", "/home/coder/.local" ]
 
+CMD [ "--auth", "none" ]
