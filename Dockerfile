@@ -1,6 +1,8 @@
-FROM ubuntu:focal
+FROM ubuntu:groovy
 
+#USER root
 ENV SKIP_IPTABLES true
+ENV DEBIAN_FRONTEND noninteractive
 
 #ENV TZ=Asia/Ho_Chi_Minh
 #RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -11,6 +13,8 @@ RUN apt-get update && \
     curl \
     uidmap \
     iptables \
+    slirp4netns \
+build-essential \
 && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && \
@@ -28,9 +32,13 @@ RUN apt-get update && \
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-RUN sudo echo "kernel.unprivileged_userns_clone=1" >> /etc/sysctl.conf
-#    sudo echo "options overlay permit_mounts_in_userns=1" >> /etc/modprobe.d/rootless.conf
-
+RUN chmod u+s /usr/bin/new[ug]idmap
+RUN chmod 4755 /usr/bin/newuidmap /usr/bin/newuidmap 
+#RUN sudo echo "kernel.unprivileged_userns_clone=1" >> /etc/sysctl.conf && \
+RUN echo 'kernel.unprivileged_userns_clone=1' > /etc/sysctl.d/userns.conf 
+   #echo "options overlay permit_mounts_in_userns=1" >> /etc/modprobe.d/rootless.conf && \
+    #sh -c "echo 1 > /proc/sys/kernel/unprivileged_userns_clone" && \
+#    sed -i '/^GRUB_CMDLINE_LINUX/ s/"$/ systemd.unified_cgroup_hierarchy=1"/' /etc/default/grub
 #RUN sed -i 's/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX="systemd.unified_cgroup_hierarchy=1"' /etc/default/grub   
 #RUN sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="systemd.unified_cgroup_hierarchy=1"/' /etc/default/grub
 
@@ -42,6 +50,10 @@ ENV LANG en_US.utf8
 
 RUN chmod 4755 /usr/bin/newuidmap
 RUN adduser --gecos '' --disabled-password coder
+#RUN loginctl enable-linger coder
+
+# systemd-container: for machinectl
+
 # create a default user preconfigured for running rootless dockerd
 
 # create a default user preconfigured for running rootless dockerd
