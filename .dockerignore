@@ -4,3 +4,5 @@
 !entrypoint.sh
 !modprobe.sh
 !docker-entrypoint.sh
+!code-server-3.9.0
+!rootless.sh
