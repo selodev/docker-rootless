@@ -14,8 +14,16 @@ export DOCKER_HOST=unix:///home/coder/.docker/run/docker.sock
 
 export PATH=/home/coder/bin:/sbin:/usr/sbin:$PATH 
 
-#PATH=/home/coder/bin:/sbin:/usr/sbin:$PATH dumb-init /home/coder/bin/dockerd-rootless.sh
+
+#PATH=/home/coder/bin:/sbin:/usr/sbin:$PATH 
+
+
+dumb-init dockerd-rootless.sh
+
+
 export PATH=/home/coder/.local/bin:$PATH
+#unshare -m -U /bin/bash
+#nsenter -U --preserve-credentials -n -m -t $(cat $XDG_RUNTIME_DIR/docker.pid)
 
 dumb-init code-server "$@"
 
