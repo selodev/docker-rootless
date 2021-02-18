@@ -18,7 +18,7 @@ export PATH=/home/coder/bin:/sbin:/usr/sbin:$PATH
 #PATH=/home/coder/bin:/sbin:/usr/sbin:$PATH 
 
 
-dumb-init dockerd-rootless.sh
+#dumb-init dockerd-rootless.sh
 
 
 export PATH=/home/coder/.local/bin:$PATH

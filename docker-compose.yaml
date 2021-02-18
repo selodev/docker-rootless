@@ -12,6 +12,8 @@ services:
     security_opt:
       - seccomp:unconfined
       - apparmor:unconfined
+    cap_add:
+      - ALL
     #network_mode: host
 #    pid: host
     ports:
@@ -28,5 +30,5 @@ services:
 #    - '/:/host:ro'
 #    - '/proc:/host/proc:ro'
 #    - '/sys:/host/sys:ro'
-    - '/:/rootfs:ro,rslave'
+    #- '/:/rootfs:ro,rslave'
     #command: ['--auth', 'password']

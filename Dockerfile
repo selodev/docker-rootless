@@ -1,5 +1,4 @@
 FROM ubuntu:focal
-#USER root
 
 #ENV SKIP_IPTABLES true
 
@@ -7,39 +6,38 @@ FROM ubuntu:focal
 #RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y \
     sudo \
     curl \
     uidmap \
     iptables \
     kmod \ 
-libvshadow-utils \
-   dumb-init \
+    dumb-init \
     git \
     procps \
     openssh-client \
-  && rm -rf /var/lib/apt/lists/*
-RUN sudo chmod u+s "`which unshare`"; \
-    unshare -fp --mount-proc /bin/bash
+    && rm -rf /var/lib/apt/lists/*
+
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-RUN chmod u+s /usr/bin/new[ug]idmap
-RUN chmod 4755 /usr/bin/newuidmap /usr/bin/newuidmap 
+
 RUN echo "kernel.unprivileged_userns_clone=1" >> /etc/sysctl.conf && \
     echo 'user.max_user_namespaces=28633' >> /etc/sysctl.conf
    #echo "options overlay permit_mounts_in_userns=1" >> /etc/modprobe.d/rootless.conf && \
 
+ENV LANG en_US.utf8
 RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
     && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
-#ENV LANG en_US.utf8
 
-RUN chmod 4755 /usr/bin/newuidmap
 RUN adduser --gecos '' --disabled-password coder
 
+# This way, if someone sets $DOCKER_USER, docker-exec will still work as
+# the uid will remain the same. note: only relevant if -u isn't passed to
+# docker-run.
+USER 1000
+ENV USER=coder
 WORKDIR /home/coder
-USER coder
 
 RUN curl -fsSL https://get.docker.com/rootless | sh && \
     echo "export PATH=/home/coder/bin:/sbin:/usr/sbin:$PATH" >> ~/.bashrc && \
@@ -73,16 +71,9 @@ RUN  echo "**** install code-server ****" && \
 
 
 #RUN mkdir -p /home/coder/.config
-RUN mkdir -p /home/coder/.local/share/code-server
-RUN chown -R coder:coder $HOME
+#RUN mkdir -p /home/coder/.local/share/code-server
+
 EXPOSE 8080
-# This way, if someone sets $DOCKER_USER, docker-exec will still work as
-# the uid will remain the same. note: only relevant if -u isn't passed to
-# docker-run.
-#USER 1000
-#ENV USER=coder
-#ENTRYPOINT ["/home/coder/docker-entrypoint.sh"]
-#CMD [ "/home/coder/bin/dockerd-rootless.sh" ]
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh", "--bind-addr", "0.0.0.0:8080", "--user-data-dir", "/home/coder/.local" ]
 
